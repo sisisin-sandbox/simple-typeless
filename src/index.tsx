@@ -1,12 +1,57 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { createActions, createEpic, createReducer, initialize, useActions, useMappedState, useModule } from 'typeless';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+export const MODULE = 'counter';
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+export const Msg = createActions(MODULE, {
+  increment: null,
+  decrement: null,
+});
+
+export interface CounterState {
+  count: number;
+}
+
+declare module 'typeless/types' {
+  interface DefaultState {
+    count: CounterState;
+  }
+}
+
+const epic = createEpic(MODULE);
+
+const reducer = createReducer({ count: 0 })
+  .on(Msg.increment, state => {
+    state.count++;
+  })
+  .on(Msg.decrement, state => {
+    state.count--;
+  });
+
+function Main() {
+  useModule({
+    epic,
+    reducer,
+    reducerPath: ['count'],
+  });
+
+  const { increment, decrement } = useActions(Msg);
+  const { count } = useMappedState(state => state.count);
+  return (
+    <div>
+      <button onClick={decrement}>-</button>
+      <div>{count}</div>
+      <button onClick={increment}>+</button>
+    </div>
+  );
+}
+
+const { TypelessProvider } = initialize();
+
+ReactDOM.render(
+  <TypelessProvider>
+    <Main />
+  </TypelessProvider>,
+  document.getElementById('root'),
+);
