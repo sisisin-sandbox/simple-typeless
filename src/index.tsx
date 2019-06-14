@@ -8,6 +8,7 @@ const [useCounterModule, CounterActions, getCounterState] = createModule(Counter
   .withActions({
     increment: null,
     decrement: null,
+    reset: null,
   })
   .withState<CounterState>();
 
@@ -22,18 +23,24 @@ useCounterModule
   })
   .on(CounterActions.decrement, state => {
     state.count--;
+  })
+  .replace(CounterActions.reset, () => {
+    return { count: 0 };
   });
 
 function Main() {
   useCounterModule();
 
-  const { increment, decrement } = useActions(CounterActions);
+  const { reset, increment, decrement } = useActions(CounterActions);
   const { count } = getCounterState.useState();
   return (
     <div>
       <button onClick={decrement}>-</button>
       <div>{count}</div>
       <button onClick={increment}>+</button>
+      <div>
+        <button onClick={reset}>reset!</button>
+      </div>
     </div>
   );
 }
