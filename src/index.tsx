@@ -1,43 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createActions, createEpic, createReducer, initialize, useActions, useMappedState, useModule } from 'typeless';
+import { createModule, DefaultTypelessProvider, useActions } from 'typeless';
 
-export const MODULE = 'counter';
+const CounterSymbol = Symbol('counter');
 
-export const Msg = createActions(MODULE, {
-  increment: null,
-  decrement: null,
-});
+const [useCounterModule, CounterActions, getCounterState] = createModule(CounterSymbol)
+  .withActions({
+    increment: null,
+    decrement: null,
+  })
+  .withState<CounterState>();
 
-export interface CounterState {
+interface CounterState {
   count: number;
 }
 
-declare module 'typeless/types' {
-  interface DefaultState {
-    count: CounterState;
-  }
-}
-
-const epic = createEpic(MODULE);
-
-const reducer = createReducer({ count: 0 })
-  .on(Msg.increment, state => {
+useCounterModule
+  .reducer({ count: 0 })
+  .on(CounterActions.increment, state => {
     state.count++;
   })
-  .on(Msg.decrement, state => {
+  .on(CounterActions.decrement, state => {
     state.count--;
   });
 
 function Main() {
-  useModule({
-    epic,
-    reducer,
-    reducerPath: ['count'],
-  });
+  useCounterModule();
 
-  const { increment, decrement } = useActions(Msg);
-  const { count } = useMappedState(state => state.count);
+  const { increment, decrement } = useActions(CounterActions);
+  const { count } = getCounterState.useState();
   return (
     <div>
       <button onClick={decrement}>-</button>
@@ -47,11 +38,9 @@ function Main() {
   );
 }
 
-const { TypelessProvider } = initialize();
-
 ReactDOM.render(
-  <TypelessProvider>
+  <DefaultTypelessProvider>
     <Main />
-  </TypelessProvider>,
+  </DefaultTypelessProvider>,
   document.getElementById('root'),
 );

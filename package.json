@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/jest": "24.0.11",
-    "@types/node": "11.12.2",
-    "@types/react": "16.8.10",
-    "@types/react-dom": "16.8.3",
+    "@types/jest": "^24.0.14",
+    "@types/node": "^12.0.8",
+    "@types/react": "^16.8.20",
+    "@types/react-dom": "^16.8.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "2.1.8",
-    "typescript": "3.4.1"
+    "react-scripts": "^3.0.1",
+    "typescript": "^3.5.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -28,8 +28,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "redux": "^4.0.1",
-    "rxjs": "^6.4.0",
-    "typeless": "^0.0.18"
+    "rxjs": "^6.5.2",
+    "typeless": "^1.1.0"
   }
 }
