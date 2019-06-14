@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createModule, DefaultTypelessProvider, useActions } from 'typeless';
+import * as Rx from 'typeless/rx';
 
 const CounterSymbol = Symbol('counter');
 
@@ -9,6 +10,7 @@ const [useCounterModule, CounterActions, getCounterState] = createModule(Counter
     increment: null,
     decrement: null,
     reset: null,
+    alertCount: null,
   })
   .withState<CounterState>();
 
@@ -16,6 +18,11 @@ interface CounterState {
   count: number;
 }
 
+useCounterModule.epic().on(CounterActions.alertCount, () => {
+  const { count } = getCounterState();
+  alert(`count: ${count}`);
+  return Rx.empty();
+});
 useCounterModule
   .reducer({ count: 0 })
   .on(CounterActions.increment, state => {
@@ -31,7 +38,7 @@ useCounterModule
 function Main() {
   useCounterModule();
 
-  const { reset, increment, decrement } = useActions(CounterActions);
+  const { alertCount, reset, increment, decrement } = useActions(CounterActions);
   const { count } = getCounterState.useState();
   return (
     <div>
@@ -40,6 +47,9 @@ function Main() {
       <button onClick={increment}>+</button>
       <div>
         <button onClick={reset}>reset!</button>
+      </div>
+      <div>
+        <button onClick={alertCount}>alert!</button>
       </div>
     </div>
   );
